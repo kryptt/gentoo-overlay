@@ -1,0 +1,1 @@
+/var/lib/layman/rindeal/eclass/versionator-patched.eclass

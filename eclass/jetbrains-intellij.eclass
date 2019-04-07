@@ -1,0 +1,1 @@
+/var/lib/layman/rindeal/eclass/jetbrains-intellij.eclass
