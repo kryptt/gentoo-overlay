@@ -25,8 +25,9 @@ pkg_setup() {
 	linux-mod_pkg_setup
 }
 
+
 src_prepare() {
-	epatch "${FILESDIR}/${P}-linux-4.11.0.patch"
+	epatch "${FILESDIR}/ldflags.patch"
 
 	default
 }
