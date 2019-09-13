@@ -24,7 +24,6 @@ RDEPEND="${CDEPEND}"
 DEPEN=="${RDEPEND}"
 
 src_prepare() {
-        epatch "${FILESDIR}/assert-eovim-0.1.3.patch"
         cmake-utils_src_prepare
 }
 
