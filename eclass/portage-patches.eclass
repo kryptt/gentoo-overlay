@@ -1,1 +1,0 @@
-/var/lib/layman/rindeal/eclass/portage-patches.eclass

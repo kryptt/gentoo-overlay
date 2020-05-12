@@ -1,1 +1,0 @@
-/var/lib/layman/rindeal/eclass/rindeal-python-utils.eclass
