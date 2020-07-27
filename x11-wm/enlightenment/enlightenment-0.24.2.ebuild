@@ -19,7 +19,7 @@ IUSE="acpi bluetooth connman doc geolocation nls pam systemd udisks wayland wifi
 REQUIRED_USE="xwayland? ( wayland )"
 
 RDEPEND="
-	>=dev-libs/efl-1.24.0[eet,X]
+	>=dev-libs/efl-1.24.0[eet,fontconfig,X]
 	virtual/udev
 	x11-libs/libXext
 	x11-libs/libxcb
@@ -91,9 +91,6 @@ src_configure() {
 }
 
 src_install() {
-	insinto /etc/enlightenment
-	newins "${FILESDIR}"/gentoo-sysactions.conf sysactions.conf
-
 	use doc && local HTML_DOCS=( doc/. )
 	meson_src_install
 }
@@ -117,4 +114,5 @@ pkg_postinst() {
 pkg_postrm() {
 	xdg_desktop_database_update
 	xdg_mimeinfo_database_update
+	xdg_icon_cache_update
 }
