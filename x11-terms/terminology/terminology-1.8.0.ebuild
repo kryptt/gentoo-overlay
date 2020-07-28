@@ -15,8 +15,7 @@ KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
 IUSE="nls"
 
 RDEPEND="
-	|| ( dev-libs/efl[egl] dev-libs/efl[opengl] )
-	|| ( dev-libs/efl[X] dev-libs/efl[wayland] )
+	|| ( dev-libs/efl[opengl] dev-libs/efl[X] dev-libs/efl[wayland] )
 	app-arch/lz4
 	>=dev-libs/efl-1.22.0[eet,fontconfig]
 "
