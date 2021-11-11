@@ -3,30 +3,41 @@
 
 EAPI=7
 
-DISTUTILS_USE_SETUPTOOLS=bdepend
-PYTHON_COMPAT=( python3_{6,7,8} )
+DISTUTILS_SINGLE_IMPL=1
+PYTHON_COMPAT=( python3_{7..9} )
 
 inherit linux-info udev xdg distutils-r1
 
 DESCRIPTION="Linux Device Manager for Logitech Unifying Receivers and Paired Devices"
 HOMEPAGE="https://pwr-solaar.github.io/Solaar/"
-SRC_URI="https://github.com/pwr-Solaar/Solaar/archive/${PV/_rc/rc}.tar.gz -> ${P/_rc/rc}.tar.gz"
+
+if [[ ${PV} =~ 9999* ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/pwr-Solaar/Solaar"
+else
+	SRC_URI="https://github.com/pwr-Solaar/Solaar/archive/${PV/_rc/rc}.tar.gz -> ${P/_rc/rc}.tar.gz"
+	KEYWORDS="amd64 ~arm x86"
+	S="${WORKDIR}"/Solaar-${PV/_rc/rc}
+fi
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
 IUSE="doc appindicator libnotify"
 
 RDEPEND="
 	acct-group/plugdev
-	dev-python/pygobject:3[${PYTHON_USEDEP}]
-	>=dev-python/pyudev-0.13[${PYTHON_USEDEP}]
-	x11-libs/gtk+:3[introspection]
-	appindicator? ( dev-libs/libappindicator:3 )
-	libnotify? ( x11-libs/libnotify )"
-# libappindicator & libnotify are entirely optional and detected at runtime
+	$(python_gen_cond_dep '
+		dev-python/psutil[${PYTHON_USEDEP}]
+		dev-python/pygobject:3[${PYTHON_USEDEP}]
+		dev-python/python-xlib[${PYTHON_USEDEP}]
+		>=dev-python/pyudev-0.13[${PYTHON_USEDEP}]
+		dev-python/pyyaml[${PYTHON_USEDEP}]
 
-S="${WORKDIR}"/Solaar-${PV/_rc/rc}
+	')
+	x11-libs/gtk+:3[introspection]
+	appindicator? ( dev-libs/libappindicator:3[introspection] )
+	libnotify? ( x11-libs/libnotify[introspection] )"
+# libappindicator & libnotify are entirely optional and detected at runtime
 
 CONFIG_CHECK="~HID_LOGITECH_DJ ~HIDRAW"
 
