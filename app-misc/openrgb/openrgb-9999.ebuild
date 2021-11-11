@@ -34,7 +34,7 @@ src_configure() {
 }
 
 src_install() {
-	dobin OpenRGB
+	dobin openrgb
 	doicon qt/OpenRGB.png
 	dodoc OpenRGB.patch
 	make_desktop_entry OpenRGB OpenRGB OpenRGB
