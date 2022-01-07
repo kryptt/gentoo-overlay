@@ -1,15 +1,17 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 inherit eutils desktop
 
-KEYWORDS="amd64 i686"
 SLOT="0"
+PV_STRING="$(ver_cut 4-6)"
 MY_PV="$(ver_cut 1-2)"
 MY_PN="idea"
 
-SRC_URI="https://download.jetbrains.com/idea/${MY_PN}IU-${MY_PV}.tar.gz"
+# upstream stable
+KEYWORDS="~amd64 ~x86"
+SRC_URI="https://download.jetbrains.com/idea/${MY_PN}IU-${MY_PV}-no-jbr.tar.gz -> ${MY_PN}IU-${PV_STRING}.tar.gz"
 
 DESCRIPTION="A complete toolset for web, mobile and enterprise development"
 HOMEPAGE="https://www.jetbrains.com/idea"
@@ -26,11 +28,35 @@ RDEPEND="${DEPEND}
 	dev-util/lldb"
 BDEPEND="dev-util/patchelf"
 RESTRICT="splitdebug"
-S="${WORKDIR}/${MY_PN}-IU-$(ver_cut 3-5)"
+S="${WORKDIR}/${MY_PN}-IU-$(ver_cut 4-6)"
 
 QA_PREBUILT="opt/${PN}-${MY_PV}/*"
 
 src_prepare() {
+	if use amd64; then
+		JRE_DIR=jre64
+	else
+		JRE_DIR=jre
+	fi
+
+	PLUGIN_DIR="${S}/${JRE_DIR}/lib/"
+
+	rm -vf ${PLUGIN_DIR}/libavplugin*
+	rm -vf "${S}"/plugins/maven/lib/maven3/lib/jansi-native/*/libjansi*
+	rm -vrf "${S}"/lib/pty4j-native/linux/ppc64le
+	rm -vf "${S}"/bin/libdbm64*
+
+	if [[ -d "${S}"/"${JRE_DIR}" ]]; then
+		for file in "${PLUGIN_DIR}"/{libfxplugins.so,libjfxmedia.so}
+		do
+			if [[ -f "$file" ]]; then
+			  patchelf --set-rpath '$ORIGIN' $file || die
+			fi
+		done
+	fi
+
+	patchelf --replace-needed liblldb.so liblldb.so.9 "${S}"/plugins/Kotlin/bin/linux/LLDBFrontend || die "Unable to patch LLDBFrontend for lldb"
+
 	sed -i \
 		-e "\$a\\\\" \
 		-e "\$a#-----------------------------------------------------------------------" \
@@ -47,7 +73,13 @@ src_install() {
 
 	insinto "${dir}"
 	doins -r *
-	fperms 755 "${dir}"/bin/{format.sh,idea.sh,inspect.sh,printenv.py,restart.py,fsnotifier{,64}}
+	fperms 755 "${dir}"/bin/{format.sh,idea.sh,inspect.sh,printenv.py,restart.py,fsnotifier}
+	if use amd64; then
+		JRE_DIR=jre64
+	else
+		JRE_DIR=jre
+	fi
+
 	make_wrapper "${PN}" "${dir}/bin/${MY_PN}.sh"
 	newicon "bin/${MY_PN}.png" "${PN}.png"
 	make_desktop_entry "${PN}" "IntelliJ Idea Ultimate" "${PN}" "Development;IDE;"
