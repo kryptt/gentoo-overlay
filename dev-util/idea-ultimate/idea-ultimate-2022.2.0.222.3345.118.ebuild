@@ -73,7 +73,7 @@ src_install() {
 
 	insinto "${dir}"
 	doins -r *
-	fperms 755 "${dir}"/bin/{format.sh,idea.sh,inspect.sh,printenv.py,restart.py,fsnotifier}
+	fperms 755 "${dir}"/bin/{format.sh,idea.sh,inspect.sh,restart.py,fsnotifier}
 	if use amd64; then
 		JRE_DIR=jre64
 	else
