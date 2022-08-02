@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit distutils-r1 cmake-utils
+inherit distutils-r1 cmake
 
 DESCRIPTION="The Enlightenment Neovim Client"
 HOMEPAGE="https://phab.enlightenment.org/w/projects/eovim/"
@@ -25,7 +25,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-		cmake-utils_src_prepare
+		cmake_src_prepare
 }
 
 src_configure() {
@@ -34,9 +34,9 @@ src_configure() {
 		mycmakeargs=(
 				-DCMAKE_BUILD_TYPE=RELEASE
 		)
-		cmake-utils_src_configure
+		cmake_src_configure
 }
 
 src_install() {
-		cmake-utils_src_install
+		cmake_src_install
 }
