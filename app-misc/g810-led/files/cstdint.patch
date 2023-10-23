@@ -1,0 +1,10 @@
+--- g810-led-old/src/helpers/help.h      2023-10-23 14:26:34.093334261 +0200
++++ g810-led-new/src/helpers/help.h  2023-10-23 14:26:42.580063770 +0200
+@@ -17,6 +17,7 @@
+ #ifndef HELP_HELPER
+ #define HELP_HELPER
+
++#include <cstdint>
+ #include <iostream>
+
+ namespace help {

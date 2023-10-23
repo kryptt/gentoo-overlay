@@ -1,9 +1,9 @@
-# Copyright 2018-2020 Gentoo Authors
+# Copyright 2018-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit systemd udev eutils
+inherit systemd udev
 
 DESCRIPTION="Led controller for Logitech G- Keyboards"
 HOMEPAGE="https://github.com/MatMoul/g810-led"
@@ -23,6 +23,8 @@ DEPEND="${RDEPEND}"
 
 DOCS=("README.md" "sample_profiles" "sample_effects")
 
+PATCHES="${FILESDIR}/cstdint.patch"
+
 src_compile() {
 	emake LIB="$(usex hidapi hidapi libusb)"
 }
@@ -32,7 +34,7 @@ src_install() {
 	dosym "libg810-led.so.${PV}" "/usr/$(get_libdir)/libg810-led.so"
 
 	dobin bin/g810-led
-	local boards=(213 410 413 512 513 610 910 pro)
+	local boards=(213 410 413 512 513 610 815 910 pro)
 	local x
 	for x in "${boards[@]}"; do
 		dosym g810-led "/usr/bin/g${x}-led"
