@@ -1,6 +1,6 @@
 # Copyright 2020 Rodolfo Hansen
 
-EAPI=7
+EAPI=8
 
 inherit udev
 

@@ -1,7 +1,7 @@
-# Copyright 2000-2020 Gentoo Authors
+# Copyright 2000-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 MY_PV="${PV/_/-}"
 MY_PV="${MY_PV/-beta/-test}"

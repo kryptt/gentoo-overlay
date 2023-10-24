@@ -1,7 +1,7 @@
 # Copyright 2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 JBIJ_PN_PRETTY="Rider"
 JBIJ_URI="rider/JetBrains.Rider-${PV}"
