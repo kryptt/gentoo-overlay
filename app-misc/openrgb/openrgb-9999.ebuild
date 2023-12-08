@@ -38,6 +38,7 @@ src_install() {
 	doicon qt/OpenRGB.png
 	dodoc OpenRGB.patch
 	make_desktop_entry OpenRGB OpenRGB OpenRGB
+	./scripts/build-udev-rules.sh .
 	udev_dorules 60-openrgb.rules
 }
 
