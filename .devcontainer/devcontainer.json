@@ -1,0 +1,23 @@
+{
+  "name": "Gentoo Overlay Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": [
+    "-p",
+    "0:2222"
+  ],
+  "initializeCommand": "tailscale ip -4 2>/dev/null > .devcontainer/.host-ip || hostname -f > .devcontainer/.host-ip || true",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/var/db/repos/rhansen-overlay,type=bind",
+  "workspaceFolder": "/var/db/repos/rhansen-overlay",
+  "remoteUser": "root",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "mads-hartmann.bash-ide-vscode",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
+}

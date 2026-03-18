@@ -1,0 +1,5 @@
+# Add public SSH keys here, one per line.
+# These will be installed as authorized_keys for the 'root' user.
+#
+# Example:
+# ssh-ed25519 AAAAC3Nza... user@machine
