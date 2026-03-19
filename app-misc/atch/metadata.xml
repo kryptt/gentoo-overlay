@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>rhansen@rhansen.org</email>
+		<name>Richard Hansen</name>
+	</maintainer>
+	<longdescription>
+		atch is a transparent terminal session manager. Unlike tmux or screen,
+		it passes the raw byte stream directly without terminal emulation,
+		preserving mouse support, scrolling, colors, and the original TERM
+		variable. Based on dtach by Ned T. Crigler.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">mobydeck/atch</remote-id>
+	</upstream>
+</pkgmetadata>
