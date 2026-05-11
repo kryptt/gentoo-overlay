@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>kryptt@gmail.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		WebTorrent Desktop is a streaming BitTorrent client built with
+		Electron. This is the upstream prebuilt Linux x86_64 binary.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">webtorrent/webtorrent-desktop</remote-id>
+		<bugs-to>https://github.com/webtorrent/webtorrent-desktop/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
