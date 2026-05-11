@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>kryptt@gmail.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		Audiobook Forge is a Rust CLI that converts audiobook directories
+		into single M4B files. It orchestrates ffmpeg for audio processing,
+		AtomicParsley and GPAC (MP4Box) for tagging and chaptering, and
+		supports parallel encoding, chapter generation, cover art, and
+		Audible metadata lookup.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">juanra/audiobook-forge</remote-id>
+		<remote-id type="cratesio">audiobook-forge</remote-id>
+		<bugs-to>https://github.com/juanra/audiobook-forge/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
