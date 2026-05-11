@@ -7,5 +7,5 @@ chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 
 # Generate host keys if missing and start sshd on port 2222
-ssh-keygen -A 2>/dev/null
-/usr/sbin/sshd -p 2222 -o PermitRootLogin=yes -o PasswordAuthentication=no
+sudo ssh-keygen -A 2>/dev/null
+sudo /usr/sbin/sshd -p 2222 -o PermitRootLogin=yes -o PasswordAuthentication=no

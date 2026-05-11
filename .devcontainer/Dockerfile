@@ -31,7 +31,7 @@ RUN echo 'MAKEOPTS="-j$(nproc)"' >> /etc/portage/make.conf
 
 # Create a non-root user with UID 1000, in wheel group for su access
 RUN useradd -m -u 1000 -s /bin/bash -G wheel developer && \
-    echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel && \
+    (echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers || true) && \
     passwd -d developer
 
 # Install Claude Code for the developer user
