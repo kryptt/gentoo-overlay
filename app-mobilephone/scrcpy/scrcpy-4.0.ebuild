@@ -34,8 +34,9 @@ BDEPEND="virtual/pkgconfig"
 src_configure() {
 	local emesonargs=(
 		-Db_lto=true
+		-Dcompile_server=false
 		-Dprebuilt_server="${DISTDIR}/${MY_SERVER_P}"
-		$(meson_feature v4l v4l2)
+		$(meson_use v4l v4l2)
 	)
 	meson_src_configure
 }
