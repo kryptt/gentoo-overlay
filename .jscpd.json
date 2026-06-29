@@ -1,0 +1,1 @@
+{"minTokens": 15, "minLines": 3, "threshold": 0, "gitignore": true, "ignore": ["**/metadata.xml"], "reporters": ["console"], "exitCode": 1}
