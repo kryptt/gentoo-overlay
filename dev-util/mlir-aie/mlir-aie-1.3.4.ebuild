@@ -63,10 +63,23 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 # Pin the exact CI-matched Peano build; XRT provides on-device execution
 # (xrt-smi + libs). The amdxdna kernel driver (dev-libs/xdna-driver) and a
 # >=6.17 kernel are runtime prerequisites but are handled out-of-band.
+#
+# The IRON Python API (`import aie.iron`) hard-imports numpy/rich/cloudpickle/
+# aiofiles at module load and ml_dtypes on first use (verified on-device
+# 2026-07-11). numpy/rich/cloudpickle/aiofiles are in ::gentoo; dev-python/
+# ml_dtypes is NOT yet packaged — until it is, `import aie.iron` fails with
+# ModuleNotFoundError: ml_dtypes. TODO: add dev-python/ml_dtypes to the
+# overlay, then add it to the cond-dep below.
 RDEPEND="
 	${PYTHON_DEPS}
 	~dev-util/llvm-aie-21.0.0.2026070801
 	dev-util/xrt
+	$(python_gen_cond_dep '
+		dev-python/numpy[${PYTHON_USEDEP}]
+		dev-python/rich[${PYTHON_USEDEP}]
+		dev-python/cloudpickle[${PYTHON_USEDEP}]
+		dev-python/aiofiles[${PYTHON_USEDEP}]
+	')
 "
 DEPEND="${RDEPEND}"
 BDEPEND="app-arch/unzip"
@@ -119,12 +132,19 @@ src_install() {
 	insinto "${sitedir}"
 	doins -r "${wheel_root}"/*
 
-	# Restore exec bits on any native tools shipped inside the package tree
-	# (aie-opt, aie-translate, clang wrappers, etc.) and byte-compile.
+	# Restore exec bits stripped by doins (0644). Everything under mlir_aie/bin/
+	# must be executable — this includes the driver scripts aiecc / aiecc.py /
+	# txn2mlir.py / xchesscc_wrapper and the native tools aie-opt / aie-translate
+	# / bootgen / llvm-objcopy. A run on real XDNA2 hardware (2026-07-11) failed
+	# with "PermissionError: .../bin/aiecc" until these got +x, so match the whole
+	# bin/ dir, not just the aie-* subset. Also restore +x on native tools that
+	# live deeper in the package tree (aie-*), plus keep .so bits.
 	local f
 	while IFS= read -r -d '' f; do
 		fperms +x "${f#${ED}}"
-	done < <(find "${ED}${sitedir}" -type f \( -name 'aie-*' -o -name '*.so' \) -print0)
+	done < <(find "${ED}${sitedir}" -type f \
+		\( -path '*/mlir_aie/bin/*' -o -name 'aie-*' -o -name '*.so' -o -name '*.so.*' \) \
+		-print0)
 
 	python_optimize "${ED}${sitedir}"
 
@@ -145,6 +165,7 @@ pkg_postinst() {
 	elog "On-device execution needs XRT + the amdxdna driver and a >=6.17"
 	elog "kernel. Verify with: xrt-smi examine  (expect /dev/accel0)."
 	elog
-	elog "Note: the in-process XRT python binding (pyxrt) upstream supports"
-	elog "Python 3.12 only; select PYTHON_SINGLE_TARGET=python3_12 if you need it."
+	elog "The in-process XRT python binding (pyxrt) ships inside XRT; it was"
+	elog "verified importable and functional on python3.14 (2026-07-11), so no"
+	elog "special PYTHON_SINGLE_TARGET pin is required for on-device execution."
 }
