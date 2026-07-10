@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>kryptt@gmail.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		AMD/Xilinx "Peano" is an LLVM/clang/lld fork that adds the AI Engine
+		(AIE) backend targets used by AMD Ryzen AI / XDNA NPUs: aie, aie2
+		(XDNA1 Phoenix/Hawk), aie2p (XDNA2 Strix Halo) and aie2ps. It is the
+		chess-free backend, so no proprietary xchesscc / Vitis toolchain is
+		required to compile kernels for AIE2/AIE2P. It is the low-level
+		compiler that dev-util/mlir-aie (IRON) drives to build NPU kernels.
+
+		This ebuild repackages the upstream prebuilt py3-none wheel (a bundle
+		of native binaries); upstream ships no source releases or stable tags.
+		The version is pinned to the exact Peano build that the matching
+		mlir-aie release is CI-tested against.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/Xilinx/llvm-aie/issues</bugs-to>
+		<remote-id type="github">Xilinx/llvm-aie</remote-id>
+		<remote-id type="pypi">llvm-aie</remote-id>
+	</upstream>
+</pkgmetadata>
