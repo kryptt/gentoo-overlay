@@ -20,14 +20,16 @@ EAPI=8
 #   mlir-aie 1.3.4  <=>  llvm-aie (Peano) 21.0.0.2026070801+4fb2354f
 # Bump the two together, mirroring upstream's `update-peano` CI workflow.
 #
-# TODO(manifest): the four cpXXX wheels are ~232 MB each. Manifest generation
-# requires fetching all of them; not generated here. Run
+# Manifest: the three cpXXX wheels are ~232 MB each and are generated from the
+# durable v1.3.4 release assets (unlike the Peano `nightly` release, these are
+# NOT overwritten). Regenerate with:
 #   DISTDIR=<dir> ebuild mlir-aie-1.3.4.ebuild manifest
-# after staging the wheels (they live on the v1.3.4 release, which unlike the
-# Peano `nightly` release is NOT overwritten, so these URLs are durable).
-# TODO(layout): the wheel's internal .data/{scripts,data,platlib} split is
-# handled generically below per PEP 427, but should be validated against the
-# real wheel contents (aie-opt, aie-translate, aiecc.py placement).
+# Layout note (validated 2026-07-11 against the real cp314 wheel): the wheel
+# has NO PEP 427 .data/ dir — its top level is `mlir_aie/` (bin/, include/,
+# lib/, python/, {aie,runtime}_lib/), `mlir_aie.libs/`, the dist-info, and a
+# top-level `aie.pth` (= "mlir_aie/python") that puts `import aie` on sys.path.
+# The .data handling below is a harmless no-op for this wheel but kept for
+# forward-compat. aie-opt / aie-translate / aiecc.py land in mlir_aie/bin/.
 
 PYTHON_COMPAT=( python3_{12..14} )
 inherit python-single-r1
@@ -51,9 +53,10 @@ LICENSE="Apache-2.0-with-LLVM-exceptions"
 SLOT="0"
 KEYWORDS="~amd64"
 
-# Prebuilt native binaries + .so bindings; no arm64 wheel.
+# Prebuilt native binaries + .so bindings; no arm64 wheel. Payload installs
+# under site-packages/mlir_aie/ (per the wheel's top_level.txt).
 RESTRICT="strip"
-QA_PREBUILT="usr/lib/python*/site-packages/aie/*"
+QA_PREBUILT="usr/lib/python*/site-packages/mlir_aie/*"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
@@ -126,9 +129,11 @@ src_install() {
 	python_optimize "${ED}${sitedir}"
 
 	# Expose the install root for IRON tooling (aiecc.py, env_setup.sh style).
+	# The payload lives under site-packages/mlir_aie/ (bin/, aie_runtime_lib/,
+	# runtime_lib/, lib/) — NOT a bare `aie/` dir.
 	newenvd - 61mlir-aie <<-EOF
 		# dev-util/mlir-aie (IRON) install root.
-		MLIR_AIE_INSTALL_DIR=${EPREFIX}${sitedir}/aie
+		MLIR_AIE_INSTALL_DIR=${EPREFIX}${sitedir}/mlir_aie
 	EOF
 }
 
