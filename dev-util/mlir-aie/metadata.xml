@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>kryptt@gmail.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		MLIR-AIE (IRON) is AMD/Xilinx's MLIR-based dataflow compiler for the AI
+		Engine array found in Ryzen AI / XDNA NPUs, together with the IRON
+		Python API ("import aie") used to author and build NPU compute kernels.
+		It emits designs for the AIE array and lowers them through the Peano
+		(dev-util/llvm-aie) backend; XRT (dev-util/xrt) plus the amdxdna kernel
+		driver provide on-device execution.
+
+		This ebuild repackages the upstream prebuilt, CPython-ABI-specific
+		wheel matching the selected PYTHON_SINGLE_TARGET. The version is pinned
+		in lockstep with the exact Peano build it is CI-tested against.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/Xilinx/mlir-aie/issues</bugs-to>
+		<remote-id type="github">Xilinx/mlir-aie</remote-id>
+		<remote-id type="pypi">mlir-aie</remote-id>
+	</upstream>
+</pkgmetadata>
