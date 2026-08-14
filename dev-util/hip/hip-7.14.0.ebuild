@@ -225,6 +225,17 @@ src_compile() {
 	fi
 }
 
+src_install() {
+	cmake_src_install
+
+	# Clang's ROCm detector hardcodes <rocm-path>/lib, so hipcc links against
+	# an absolute /usr/lib/libamdhip64.so that does not exist on a lib64
+	# layout. CMake consumers are fine, they go through hip-targets.cmake.
+	if [[ $(get_libdir) != lib ]]; then
+		dosym -r "/usr/$(get_libdir)/libamdhip64.so" /usr/lib/libamdhip64.so
+	fi
+}
+
 src_test() {
 	check_amdgpu
 	export LD_LIBRARY_PATH="${BUILD_DIR}/hipamd/lib"
