@@ -90,6 +90,21 @@ src_install() {
 	dodir "${dest}"
 	cp -a bin lib libexec share "${ED}${dest}"/ || die
 
+	# The rocprofiler-compute python tree hardcodes /opt/rocm when it reaches
+	# for the *system* ROCm - libamdhip64, libhiprtc, the roctx injector.
+	# On this layout that is /usr; dev-util/hip installs the
+	# /usr/lib/libamdhip64.so compat symlink those ctypes loads need.
+	grep -rlZ "/opt/rocm" "${ED}${dest}"/libexec/rocprofiler-compute --include="*.py" |
+		xargs -0 -r sed -i -e "s:/opt/rocm:${EPREFIX}/usr:g" || die
+
+	# librocprofiler-sdk-tool.so is the one thing that lives here rather than
+	# in the system tree, so its default has to point back at this prefix.
+	sed -i -e "s|Path(os.getenv(\"ROCM_PATH\", \"${EPREFIX}/usr\"))|Path(\"${dest}\")|" \
+		"${ED}${dest}"/libexec/rocprofiler-compute/argparser.py || die
+	grep -q "Path(\"${dest}\")" \
+		"${ED}${dest}"/libexec/rocprofiler-compute/argparser.py ||
+		die "rocprofiler-sdk tool path default not rewritten"
+
 	local script
 	for script in "${ED}${dest}"/bin/* \
 			"${ED}${dest}"/libexec/rocprofiler-compute/rocprof-compute; do
