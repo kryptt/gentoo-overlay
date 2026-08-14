@@ -1,0 +1,16 @@
+ValidSpirvFlags is a std::unordered_set, but comgr-compiler.cpp never includes
+<unordered_set>; it used to arrive transitively through the LLVM headers.
+Building against upstream LLVM 23 it does not, giving:
+
+  error: 'unordered_set' in namespace 'std' does not name a template type
+  error: 'ValidSpirvFlags' was not declared in this scope
+--- a/src/comgr-compiler.cpp
++++ b/src/comgr-compiler.cpp
+@@ -78,6 +78,7 @@
+ 
+ #include <csignal>
+ #include <sstream>
++#include <unordered_set>
+ 
+ LLD_HAS_DRIVER(elf)
+ 

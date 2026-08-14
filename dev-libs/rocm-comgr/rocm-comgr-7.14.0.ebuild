@@ -28,6 +28,7 @@ RESTRICT="!test? ( test )"
 PATCHES=(
 	"${FILESDIR}/${PN}-6.4.1-extend-isa-compatibility-check.patch"
 	"${FILESDIR}/${PN}-6.1.0-dont-add-nogpulib.patch"
+	"${FILESDIR}/${PN}-7.14.0-missing-include.patch"
 )
 
 RDEPEND="

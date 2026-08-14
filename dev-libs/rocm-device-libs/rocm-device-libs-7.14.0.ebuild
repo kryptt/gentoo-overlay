@@ -42,6 +42,7 @@ CMAKE_BUILD_TYPE=Release
 
 PATCHES=(
 	"${FILESDIR}/${PN}-6.2.0-test-bitcode-dir.patch"
+	"${FILESDIR}/${PN}-7.14.0-msad-target-feature.patch"
 )
 
 src_unpack() {
@@ -62,6 +63,10 @@ src_prepare() {
 	sed -e "s:amdgcn/bitcode:lib/amdgcn/bitcode:" \
 		-i cmake/OCL.cmake \
 		-i cmake/Packages.cmake || die
+
+	# upstream builds with ROCm's own LLVM, which does not raise
+	# -Wattribute-alias on the async-copy aliases
+	sed -e "s: -Werror::" -i cmake/OCL.cmake || die
 	# shellcheck disable=SC2016
 	sed -e 's:${CMAKE_INSTALL_DATADIR}/doc/${CPACK_PACKAGE_NAME}:${CMAKE_INSTALL_DOCDIR}:' \
 		-i CMakeLists.txt || die

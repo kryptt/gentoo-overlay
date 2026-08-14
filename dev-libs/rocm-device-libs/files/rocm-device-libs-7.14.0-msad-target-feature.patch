@@ -1,0 +1,31 @@
+Upstream tags the lerp/qsad/sad wrappers with their target features but
+missed msad/mqsad. ROCm's own LLVM fork does not enforce it; upstream
+LLVM 23 does, so the build fails with:
+
+  error: '__builtin_amdgcn_msad_u8' needs target feature msad-insts
+--- a/ockl/src/media.cl
++++ b/ockl/src/media.cl
+@@ -14,6 +14,7 @@
+ #define LCATTR __attribute__((const, target("lerp-inst")))
+ #define QCATTR __attribute__((const, target("qsad-insts")))
+ #define SCATTR __attribute__((const, target("sad-insts")))
++#define MCATTR __attribute__((const, target("msad-insts")))
+ #define AS_UCHAR4(X) __builtin_astype(X, uchar4)
+ 
+ CATTR uint
+@@ -137,13 +138,13 @@
+     return a1 < c ? a1 : c;
+ }
+ 
+-CATTR uint
++MCATTR uint
+ OCKL_MANGLE_U32(msad)(uint a, uint b, uint c)
+ {
+     return __builtin_amdgcn_msad_u8(a, b, c);
+ }
+ 
+-CATTR ulong
++MCATTR ulong
+ OCKL_MANGLE_U64(mqsad)(ulong a, uint b, ulong c)
+ {
+     return __builtin_amdgcn_mqsad_pk_u16_u8(a, b, c);
