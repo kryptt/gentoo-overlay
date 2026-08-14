@@ -88,9 +88,17 @@ src_install() {
 		python_fix_shebang -q "${script}"
 	done
 
-	# One PATH entry beats eight wrapper scripts
+	# One PATH entry beats eight wrapper scripts.
+	#
+	# LDPATH is not optional: rocpd/libpyrocpd.so pulls librocm_sysdeps_elf
+	# directly, but its own RUNPATH only reaches ${dest}/lib, and RUNPATH is
+	# not inherited from the object that triggered the load. Having
+	# ${dest}/lib in the cache also lets the HSA runtime dlopen the bundled
+	# libhsa-amd-aqlprofile64, which is what hardware counter collection
+	# needs. Every soname under these two directories is TheRock-private.
 	newenvd - 99rocprofiler-therock <<-EOF
 		PATH="${dest}/bin"
+		LDPATH="${dest}/lib:${dest}/lib/rocm_sysdeps/lib"
 	EOF
 }
 
