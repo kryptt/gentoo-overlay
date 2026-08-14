@@ -6,7 +6,7 @@ EAPI=8
 # the rocpd2* converters refuse to run on 3.14
 PYTHON_COMPAT=( python3_{11..13} )
 
-inherit python-single-r1
+inherit optfeature python-single-r1
 
 MY_ARCH="gfx1151"
 MY_P="therock-dist-linux-${MY_ARCH}-${PV}"
@@ -29,8 +29,16 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 # system ROCm, so the two have to be the matching release. librocprofiler-register
 # deliberately comes from dev-libs/rocprofiler-register rather than the bundled
 # copy: the runtimes and the profiler have to meet in one instance of it.
+# pandas/jinja/pyyaml are what the rocpd2* converters import to render a
+# summary; without them rocprofv3 still writes its database but nothing can
+# read it back.
 RDEPEND="
 	${PYTHON_DEPS}
+	$(python_gen_cond_dep '
+		dev-python/jinja[${PYTHON_USEDEP}]
+		dev-python/pandas[${PYTHON_USEDEP}]
+		dev-python/pyyaml[${PYTHON_USEDEP}]
+	')
 	dev-libs/rocprofiler-register
 	~dev-libs/rocm-comgr-${PV}
 	~dev-libs/rocr-runtime-${PV}
@@ -104,6 +112,11 @@ src_install() {
 
 pkg_postinst() {
 	elog "Run 'env-update && source /etc/profile' to pick up ${P} in PATH."
+	elog
+	optfeature "PDF output from rocpd2summary" dev-python/reportlab
+	elog
+	elog "rocpd2otf2 additionally needs the 'otf2' python module, which is not"
+	elog "packaged in ::gentoo; the other rocpd2* converters do not use it."
 	elog
 	elog "'rocprof-compute profile' needs nothing beyond the standard library."
 	elog "'rocprof-compute analyze' additionally wants the pinned packages in"
