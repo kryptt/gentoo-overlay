@@ -64,6 +64,7 @@ COMPONENTS=(
 	"./lib/rocm_sysdeps/lib"
 	"./lib/rocprofiler-sdk"
 	"./libexec/rocprofiler-compute"
+	"./share/amd_smi"
 	"./share/doc/hsa-amd-aqlprofile"
 	"./share/doc/rocprofiler-compute"
 	"./share/doc/rocprofiler-sdk"
@@ -104,6 +105,17 @@ src_install() {
 	grep -q "Path(\"${dest}\")" \
 		"${ED}${dest}"/libexec/rocprofiler-compute/argparser.py ||
 		die "rocprofiler-sdk tool path default not rewritten"
+
+	# 'rocprof-compute profile' reads GPU specs through the amdsmi python
+	# bindings, which it expects under <rocm>/share/amd_smi. ::gentoo's
+	# dev-util/amdsmi stops at 7.2.0 and is pinned to rocm-core:0/7.2, so use
+	# the copy from the same tarball; its libamd_smi.so wants the bundled
+	# librocm_sysdeps_nl_* that LDPATH above already exposes.
+	sed -i -e "s|os.getenv(\"ROCM_PATH\", \"${EPREFIX}/usr\") + \"/share/amd_smi\"|\"${dest}/share/amd_smi\"|" \
+		"${ED}${dest}"/libexec/rocprofiler-compute/utils/amdsmi_interface.py || die
+	grep -q "\"${dest}/share/amd_smi\"" \
+		"${ED}${dest}"/libexec/rocprofiler-compute/utils/amdsmi_interface.py ||
+		die "amdsmi search path not rewritten"
 
 	local script
 	for script in "${ED}${dest}"/bin/* \
