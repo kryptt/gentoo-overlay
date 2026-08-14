@@ -55,6 +55,7 @@ DEPEND="
 	video_cards_amdgpu? (
 		dev-util/rocminfo:${SLOT}
 		dev-libs/rocm-comgr:${SLOT}
+		dev-libs/rocprofiler-register
 		dev-libs/rocr-runtime:${SLOT}
 	)
 	video_cards_nvidia? ( dev-libs/hipother:${SLOT} )
@@ -170,7 +171,7 @@ src_configure() {
 		-DCLR_BUILD_OCL="$(usex opencl)"
 
 		-DHIP_COMMON_DIR="${HIP_S}"
-		-DHIP_ENABLE_ROCPROFILER_REGISTER=OFF
+		-DHIP_ENABLE_ROCPROFILER_REGISTER=ON
 		-DHIPCC_BIN_DIR="${EPREFIX}/usr/bin"
 		-DROCM_PATH="${EPREFIX}/usr"
 

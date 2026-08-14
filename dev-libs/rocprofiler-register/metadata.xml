@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>rodolfo.hansen@adtechnacity.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		rocprofiler-register is the handshake between ROCm runtimes and
+		profilers: HIP and the HSA runtime publish their API dispatch tables
+		through it, and rocprofiler-sdk (rocprofv3) reads them back. Without
+		it linked into the runtimes, rocprofv3 runs the application but
+		collects nothing.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">ROCm/rocm-systems</remote-id>
+	</upstream>
+</pkgmetadata>

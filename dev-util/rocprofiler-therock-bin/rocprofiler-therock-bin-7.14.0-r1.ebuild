@@ -25,9 +25,12 @@ KEYWORDS="-* ~amd64"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # The profiler libraries resolve libhsa-runtime64 and libamd_comgr from the
-# system ROCm, so the two have to be the matching release.
+# system ROCm, so the two have to be the matching release. librocprofiler-register
+# deliberately comes from dev-libs/rocprofiler-register rather than the bundled
+# copy: the runtimes and the profiler have to meet in one instance of it.
 RDEPEND="
 	${PYTHON_DEPS}
+	dev-libs/rocprofiler-register
 	~dev-libs/rocm-comgr-${PV}
 	~dev-libs/rocr-runtime-${PV}
 "
@@ -47,7 +50,6 @@ COMPONENTS=(
 	"./bin/rocprofv3"
 	"./bin/rocprofv3-avail"
 	"./lib/libhsa-amd-aqlprofile64.so*"
-	"./lib/librocprofiler-register.so*"
 	"./lib/librocprofiler-sdk*.so*"
 	"./lib/rocm_sysdeps/lib"
 	"./lib/rocprofiler-sdk"

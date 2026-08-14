@@ -30,6 +30,7 @@ IUSE="debug"
 COMMON_DEPEND="dev-libs/elfutils
 	x11-libs/libdrm"
 DEPEND="${COMMON_DEPEND}
+	dev-libs/rocprofiler-register
 	dev-libs/roct-thunk-interface:${SLOT}
 	dev-libs/rocm-device-libs:${SLOT}
 	$(llvm_gen_dep "
@@ -67,7 +68,6 @@ src_configure() {
 	use debug || append-cxxflags "-DNDEBUG"
 
 	local mycmakeargs=(
-		-DCMAKE_DISABLE_FIND_PACKAGE_rocprofiler-register=ON
 		-Wno-dev
 	)
 
