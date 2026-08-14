@@ -52,6 +52,7 @@ COMPONENTS=(
 	"./bin/rocprofv3-avail"
 	"./lib/libhsa-amd-aqlprofile64.so*"
 	"./lib/librocprofiler-sdk*.so*"
+	"./lib/python3.1[123]/site-packages"
 	"./lib/rocm_sysdeps/lib"
 	"./lib/rocprofiler-sdk"
 	"./libexec/rocprofiler-compute"
