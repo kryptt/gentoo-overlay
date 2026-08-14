@@ -3,7 +3,8 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{11..14} )
+# the rocpd2* converters refuse to run on 3.14
+PYTHON_COMPAT=( python3_{11..13} )
 
 inherit python-single-r1
 
