@@ -1,0 +1,17 @@
+libhsakmt is built with -fvisibility=hidden, and the private src/libhsakmt.h
+is what redefines HSAKMTAPI to __attribute__((visibility("default"))). Every
+other translation unit includes it; src/extsem.c only includes the public
+hsakmt/hsakmt.h, where HSAKMTAPI is empty. Its two entry points therefore
+end up GLOBAL HIDDEN, the version script cannot promote them, and
+libhsa-runtime64 is left with undefined references to them.
+--- a/src/extsem.c
++++ b/src/extsem.c
+@@ -4,7 +4,7 @@
+  * SPDX-License-Identifier: MIT
+  */
+ 
+-#include "hsakmt/hsakmt.h"
++#include "libhsakmt.h"
+ 
+ HSAKMT_STATUS HSAKMTAPI hsaKmtImportExternalSemaphore(
+     HSAuint32 NodeId, void *NtHandle,

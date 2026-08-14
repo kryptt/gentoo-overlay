@@ -44,6 +44,7 @@ CMAKE_BUILD_TYPE=Release
 
 PATCHES=(
 	"${FILESDIR}/${PN}-7.14.0-functions.patch"
+	"${FILESDIR}/${PN}-7.14.0-extsem-visibility.patch"
 	"${FILESDIR}/kfdtest-6.1.0-skipIPCtest.patch"
 	"${FILESDIR}/kfdtest-6.2.4-fix-llvm-header.patch"
 )
@@ -68,10 +69,6 @@ src_prepare() {
 
 src_configure() {
 	llvm_prepend_path "${LLVM_SLOT}"
-
-	# nothing inside libhsakmt references src/extsem.c, so LTO drops it and
-	# the external-semaphore entry points never make it into the .so
-	filter-lto
 
 	# QA warnings
 	append-cxxflags -Wno-unused-value
