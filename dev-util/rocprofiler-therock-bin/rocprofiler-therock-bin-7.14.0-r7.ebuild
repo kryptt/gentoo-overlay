@@ -60,6 +60,7 @@ COMPONENTS=(
 	"./bin/rocprofv3-avail"
 	"./lib/libhsa-amd-aqlprofile64.so*"
 	"./lib/librocprofiler-sdk*.so*"
+	"./lib/python3/site-packages"
 	"./lib/python3.1[123]/site-packages"
 	"./lib/rocm_sysdeps/lib"
 	"./lib/rocprofiler-sdk"
@@ -131,9 +132,15 @@ src_install() {
 	# ${dest}/lib in the cache also lets the HSA runtime dlopen the bundled
 	# libhsa-amd-aqlprofile64, which is what hardware counter collection
 	# needs. Every soname under these two directories is TheRock-private.
+	#
+	# ROCM_VER is the documented fallback for rocprof-compute's ROCm version
+	# probe: it reads <rocm>/.info/version, which dev-libs/rocm-core removes
+	# on purpose ("too broad for standard directory"), so nothing on a Gentoo
+	# system will ever provide it.
 	newenvd - 99rocprofiler-therock <<-EOF
 		PATH="${dest}/bin"
 		LDPATH="${dest}/lib:${dest}/lib/rocm_sysdeps/lib"
+		ROCM_VER="${PV}"
 	EOF
 }
 
