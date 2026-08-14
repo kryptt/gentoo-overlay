@@ -1,0 +1,18 @@
+https://github.com/ROCm/rocm-systems/issues/284
+
+rocr-runtime's thunk_loader resolves these out of libhsakmt, but the version
+script keeps them local, so the runtime fails to find them. Refreshed for
+ROCm 7.14 (hsaKmtCreateQueueV2 is new since 7.2).
+--- a/src/libhsakmt.ver
++++ b/src/libhsakmt.ver
+@@ -106,6 +106,10 @@
+ hsaKmtMemoryCpuMap;
+ hsaKmtSetSigbusDelay;
+ hsaKmtGetAmdGPUDeviceFd;
++hsaKmtCreateQueueExt;
++hsaKmtCreateQueueV2;
++hsaKmtRegisterGraphicsHandleToNodesExt;
++hsaKmtModelEnabled;
+ local: *;
+ };
+ 
