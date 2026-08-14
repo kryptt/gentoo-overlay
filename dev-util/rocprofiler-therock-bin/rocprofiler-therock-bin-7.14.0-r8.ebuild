@@ -132,6 +132,13 @@ src_install() {
 	# ${dest}/lib in the cache also lets the HSA runtime dlopen the bundled
 	# libhsa-amd-aqlprofile64, which is what hardware counter collection
 	# needs. Every soname under these two directories is TheRock-private.
+	# The HSA runtime probes for hardware counter support with
+	# dlopen("libhsa-amd-aqlprofile64.so") - unversioned, and ldconfig only
+	# indexes SONAMEs, so LDPATH below cannot satisfy it. Nothing else on the
+	# system ships aqlprofile, so claim the system name.
+	dosym -r "${dest}/lib/libhsa-amd-aqlprofile64.so.1" \
+		"/usr/$(get_libdir)/libhsa-amd-aqlprofile64.so"
+
 	#
 	# ROCM_VER is the documented fallback for rocprof-compute's ROCm version
 	# probe: it reads <rocm>/.info/version, which dev-libs/rocm-core removes
