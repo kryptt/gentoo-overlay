@@ -132,6 +132,17 @@ src_install() {
 	# ${dest}/lib in the cache also lets the HSA runtime dlopen the bundled
 	# libhsa-amd-aqlprofile64, which is what hardware counter collection
 	# needs. Every soname under these two directories is TheRock-private.
+	# rocprof-compute builds its "native counter collection tool" on first use
+	# by running cmake over libexec/rocprofiler-compute/lib, but the tarball
+	# ships only lib/roctx_recordfn/ - the parent CMakeLists.txt is missing,
+	# so that build can never succeed from this distribution. Default to the
+	# flag upstream already provides for skipping it.
+	sed -i -e '/"--no-native-tool"/,/^    )/ s/default=False,/default=True,/' \
+		"${ED}${dest}"/libexec/rocprofiler-compute/argparser.py || die
+	sed -n '/"--no-native-tool"/,/^    )/p' \
+		"${ED}${dest}"/libexec/rocprofiler-compute/argparser.py |
+		grep -q "default=True," || die "--no-native-tool default not flipped"
+
 	# The HSA runtime probes for hardware counter support with
 	# dlopen("libhsa-amd-aqlprofile64.so") - unversioned, and ldconfig only
 	# indexes SONAMEs, so LDPATH below cannot satisfy it. Nothing else on the
@@ -153,6 +164,9 @@ src_install() {
 
 pkg_postinst() {
 	elog "Run 'env-update && source /etc/profile' to pick up ${P} in PATH."
+	elog
+	elog "'rocprof-compute profile' defaults to --no-native-tool here; the"
+	elog "tarball ships the native tool's sources without its CMakeLists.txt."
 	elog
 	optfeature "PDF output from rocpd2summary" dev-python/reportlab
 	elog
