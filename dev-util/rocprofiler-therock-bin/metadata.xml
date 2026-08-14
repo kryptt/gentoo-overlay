@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>rodolfo.hansen@adtechnacity.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		rocprofv3 (rocprofiler-sdk) and rocprof-compute, extracted from AMD's
+		prebuilt TheRock gfx1151 distribution. ROCm 7.14.0 is the release that
+		added Strix Halo support to rocprof-compute; its profile output is
+		keyed rdna35_halo for gfx1151.
+
+		This is a binary package: the profiler tree is self-contained under
+		/opt/rocprofiler-therock and resolves libhsa-runtime64 and
+		libamd_comgr from the matching system ROCm.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">ROCm/rocprofiler-sdk</remote-id>
+		<remote-id type="github">ROCm/rocprofiler-compute</remote-id>
+	</upstream>
+</pkgmetadata>
