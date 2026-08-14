@@ -10,7 +10,7 @@ LLVM_COMPAT=( 22 23 )
 inherit cmake flag-o-matic llvm-r2
 
 MY_P=llvm-project-${ROCM_TAG}
-components=( "amd/device-libs" )
+components=( "amd/device-libs" "clang/lib/Headers/amdhsa_abi.h" )
 
 if [[ ${PV} == *9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/ROCm/llvm-project"
@@ -65,6 +65,14 @@ src_prepare() {
 	# shellcheck disable=SC2016
 	sed -e 's:${CMAKE_INSTALL_DATADIR}/doc/${CPACK_PACKAGE_NAME}:${CMAKE_INSTALL_DOCDIR}:' \
 		-i CMakeLists.txt || die
+
+	# ockl/src/workitem.cl includes <amdhsa_abi.h>, a Clang resource header that
+	# only exists from LLVM 23 on. It is a plain struct/offset definition, so
+	# take it from the same tarball rather than requiring a pre-release Clang.
+	if [[ ${LLVM_SLOT} -lt 23 ]]; then
+		cp "${WORKDIR}/${MY_P}/clang/lib/Headers/amdhsa_abi.h" ockl/inc/ || die
+	fi
+
 	cmake_src_prepare
 }
 
