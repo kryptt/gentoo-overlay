@@ -1,0 +1,23 @@
+LLVM 23 keeps CompressedOffloadBundle in llvm/Object/OffloadBundle.h under
+namespace llvm::object; ROCm's fork still re-exports it from
+clang/Driver/OffloadBundler.h. The API itself is unchanged.
+--- a/src/comgr-unbundle-command.cpp
++++ b/src/comgr-unbundle-command.cpp
+@@ -15,6 +15,7 @@
+ #include <comgr-unbundle-command.h>
+ 
+ #include <clang/Driver/OffloadBundler.h>
++#include <llvm/Object/OffloadBundle.h>
+ #include <llvm/BinaryFormat/Magic.h>
+ 
+ namespace COMGR {
+@@ -143,7 +144,8 @@
+ 
+   MemoryBuffer &InputBuffer = **MaybeInputBuffer;
+ 
+-  using Header = CompressedOffloadBundle::CompressedBundleHeader;
++  using Header =
++      llvm::object::CompressedOffloadBundle::CompressedBundleHeader;
+   Expected<Header> MaybeHeader = Header::tryParse(InputBuffer.getBuffer());
+   if (!MaybeHeader)
+     return MaybeHeader.takeError();

@@ -69,6 +69,10 @@ src_prepare() {
 src_configure() {
 	llvm_prepend_path "${LLVM_SLOT}"
 
+	# nothing inside libhsakmt references src/extsem.c, so LTO drops it and
+	# the external-semaphore entry points never make it into the .so
+	filter-lto
+
 	# QA warnings
 	append-cxxflags -Wno-unused-value
 
