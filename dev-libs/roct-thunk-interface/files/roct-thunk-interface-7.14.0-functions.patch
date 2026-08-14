@@ -1,11 +1,12 @@
 https://github.com/ROCm/rocm-systems/issues/284
 
-rocr-runtime's thunk_loader resolves these out of libhsakmt, but the version
-script keeps them local, so the runtime fails to find them. Refreshed for
-ROCm 7.14 (hsaKmtCreateQueueV2 is new since 7.2).
+rocr-runtime resolves these out of libhsakmt, but the version script keeps
+them local, so libhsa-runtime64 ends up with undefined references. The set
+is derived from `nm -D --undefined-only libhsa-runtime64.so` minus the
+exports of libhsakmt.so.
 --- a/src/libhsakmt.ver
 +++ b/src/libhsakmt.ver
-@@ -106,6 +106,10 @@
+@@ -106,6 +106,12 @@
  hsaKmtMemoryCpuMap;
  hsaKmtSetSigbusDelay;
  hsaKmtGetAmdGPUDeviceFd;
@@ -13,6 +14,8 @@ ROCm 7.14 (hsaKmtCreateQueueV2 is new since 7.2).
 +hsaKmtCreateQueueV2;
 +hsaKmtRegisterGraphicsHandleToNodesExt;
 +hsaKmtModelEnabled;
++hsaKmtImportExternalSemaphore;
++hsaKmtDestroyExternalSemaphore;
  local: *;
  };
  
