@@ -156,6 +156,21 @@ src_configure() {
 	append-flags -fno-strict-aliasing
 	filter-lto
 
+	# rocclr heap-allocates over-aligned types -- roc::VirtualGPU carries two
+	# alignas(64) AQL packets -- through amd::ReferenceCountedObject::operator
+	# new(size_t) (rocclr/include/top.hpp), which hides C++17's align_val_t
+	# overload, so the object comes back only 16-byte aligned. Given AVX-512
+	# the compiler folds those members' zero-init into vmovdqa64 stores that
+	# require 64, and hipStreamCreateWithFlags SIGSEGVs depending on where the
+	# allocation happens to land. AMD's own therock-10.0 binaries contain zero
+	# AVX instructions; match that.
+	# ponytail: blanket -mno-avx, so this also costs clr's AVX-512 non-temporal
+	# AQL write path (utils/nontemporal.hpp, guarded by __AVX512F__ -- absent
+	# from AMD's binaries too). If dispatch throughput ever measures short, the
+	# upgrade path is to drop this and instead give ReferenceCountedObject an
+	# operator new(size_t, std::align_val_t), and upstream it.
+	append-flags -mno-avx
+
 	use debug && CMAKE_BUILD_TYPE="Debug"
 
 	# Fix ld.lld linker error: https://github.com/ROCm/HIP/issues/3382
