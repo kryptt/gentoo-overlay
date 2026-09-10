@@ -6,9 +6,8 @@ EAPI=8
 # ROCm 7.14 is built by TheRock; components are no longer tagged "rocm-${PV}".
 ROCM_TAG="therock-10.0"
 
-LLVM_COMPAT=( 22 23 )
 ROCM_SKIP_GLOBALS=1
-inherit cmake flag-o-matic linux-info llvm-r2 rocm
+inherit cmake flag-o-matic linux-info rocm
 
 if [[ ${PV} == *9999 ]] ; then
 	EGIT_SUBMODULES=()
@@ -33,7 +32,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	test? (
-		$(llvm_gen_dep "llvm-core/llvm:\${LLVM_SLOT}")
+		sys-devel/llvm-roc
 		dev-cpp/gtest
 	)"
 
@@ -68,8 +67,6 @@ src_prepare() {
 }
 
 src_configure() {
-	llvm_prepend_path "${LLVM_SLOT}"
-
 	# QA warnings
 	append-cxxflags -Wno-unused-value
 
@@ -84,6 +81,10 @@ src_configure() {
 		# ODR violations (bug #956958)
 		filter-lto
 
+		# kfdtest assembles shaders with LLVM MC; use the same fork the
+		# rest of the ROCm stack is built against.
+		mycmakeargs+=( -DCMAKE_PREFIX_PATH="${EPREFIX}/usr/lib/llvm/roc" )
+		export PATH="${EPREFIX}/usr/lib/llvm/roc/bin:${PATH}"
 		export LIBHSAKMT_PATH="${BUILD_DIR}"
 		test_wrapper "${S}/tests/kfdtest" cmake_src_configure
 	fi
