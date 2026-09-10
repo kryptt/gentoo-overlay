@@ -10,9 +10,7 @@ DOCS_BUILDER="doxygen"
 DOCS_DEPEND="media-gfx/graphviz"
 ROCM_SKIP_GLOBALS=1
 
-LLVM_COMPAT=( 22 23 )
-
-inherit cmake docs flag-o-matic llvm-r2 rocm
+inherit cmake docs flag-o-matic rocm
 
 DESCRIPTION="C++ Heterogeneous-Compute Interface for Portability"
 HOMEPAGE="https://github.com/ROCm/rocm-systems/tree/develop/projects/clr"
@@ -65,12 +63,10 @@ DEPEND="
 BDEPEND="
 	video_cards_amdgpu? (
 		dev-util/hipcc:${SLOT}
+		sys-devel/llvm-roc
 	)
 	test? (
 		media-libs/freeglut
-		$(llvm_gen_dep "
-			dev-util/spirv-llvm-translator:\${LLVM_SLOT}
-		")
 	)
 "
 RDEPEND="${DEPEND}
@@ -111,7 +107,7 @@ src_prepare() {
 	# FindHIP.cmake module. But the reality is some package relies on it.
 	# Set HIP and HIP Clang paths directly, don't search using heuristics
 	sed -e "s:# Search for HIP installation:set(HIP_ROOT_DIR \"${EPREFIX}/usr\"):" \
-		-e "s:#Set HIP_CLANG_PATH:set(HIP_CLANG_PATH \"$(get_llvm_prefix -d)/bin\"):" \
+		-e "s:#Set HIP_CLANG_PATH:set(HIP_CLANG_PATH \"${EPREFIX}/usr/lib/llvm/roc/bin\"):" \
 		-i "cmake/FindHIP.cmake" || die
 	popd >/dev/null || die
 
@@ -178,7 +174,7 @@ src_configure() {
 	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
 
 	local mycmakeargs=(
-		-DCMAKE_PREFIX_PATH="$(get_llvm_prefix)"
+		-DCMAKE_PREFIX_PATH="${EPREFIX}/usr/lib/llvm/roc"
 		-DCMAKE_SKIP_RPATH=ON
 		-D__HIP_ENABLE_PCH=OFF
 

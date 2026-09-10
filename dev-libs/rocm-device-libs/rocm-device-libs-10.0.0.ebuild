@@ -6,11 +6,10 @@ EAPI=8
 # ROCm 7.14 is built by TheRock; components are no longer tagged "rocm-${PV}".
 ROCM_TAG="therock-10.0"
 
-LLVM_COMPAT=( 22 23 )
-inherit cmake flag-o-matic llvm-r2
+inherit cmake flag-o-matic
 
 MY_P=llvm-project-${ROCM_TAG}
-components=( "amd/device-libs" "clang/lib/Headers/amdhsa_abi.h" )
+components=( "amd/device-libs" )
 
 if [[ ${PV} == *9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/ROCm/llvm-project"
@@ -32,10 +31,7 @@ RESTRICT="!test? ( test )"
 
 BDEPEND="
 	dev-build/rocm-cmake
-	$(llvm_gen_dep "
-		llvm-core/clang:\${LLVM_SLOT}
-		llvm-core/lld:\${LLVM_SLOT}
-	")
+	sys-devel/llvm-roc
 "
 
 CMAKE_BUILD_TYPE=Release
@@ -70,24 +66,20 @@ src_prepare() {
 	sed -e 's:${CMAKE_INSTALL_DATADIR}/doc/${CPACK_PACKAGE_NAME}:${CMAKE_INSTALL_DOCDIR}:' \
 		-i CMakeLists.txt || die
 
-	# ockl/src/workitem.cl includes <amdhsa_abi.h>, a Clang resource header that
-	# only exists from LLVM 23 on. It is a plain struct/offset definition, so
-	# take it from the same tarball rather than requiring a pre-release Clang.
-	if [[ ${LLVM_SLOT} -lt 23 ]]; then
-		cp "${WORKDIR}/${MY_P}/clang/lib/Headers/amdhsa_abi.h" ockl/inc/ || die
-	fi
-
 	cmake_src_prepare
 }
 
 src_configure() {
-	# Do not trust CMake with autoselecting Clang, as it autoselects the latest one
-	# producing too modern LLVM bitcode and causing linker errors in other packages.
-	llvm_prepend_path "${LLVM_SLOT}"
-	local -x CC=${CHOST}-clang
-	local -x CXX=${CHOST}-clang++
+	# Do not trust CMake with autoselecting Clang: the bitcode must come from
+	# the same fork the rest of the ROCm stack is built against.
+	local -x CC="${EPREFIX}/usr/lib/llvm/roc/bin/clang"
+	local -x CXX="${EPREFIX}/usr/lib/llvm/roc/bin/clang++"
 	# Clean up unsupported flags for the switched compiler, see #936099
 	strip-unsupported-flags
+
+	local mycmakeargs=(
+		-DCMAKE_PREFIX_PATH="${EPREFIX}/usr/lib/llvm/roc"
+	)
 
 	cmake_src_configure
 }
@@ -95,7 +87,9 @@ src_configure() {
 src_install() {
 	cmake_src_install
 	# install symlink, so that clang won't ask for "--rocm-device-lib-path" flag anymore
-	local bitcodedir="$(clang -print-resource-dir)/$(get_libdir)/amdgcn/bitcode"
+	# llvm-roc installs on lib/ (no libdir suffix), so clang searches
+	# <resource-dir>/lib/amdgcn/bitcode regardless of the host libdir.
+	local bitcodedir="$("${EPREFIX}/usr/lib/llvm/roc/bin/clang" -print-resource-dir)/lib/amdgcn/bitcode"
 	dosym -r "/usr/lib/amdgcn/bitcode" "${bitcodedir#"${EPREFIX}"}"
 }
 

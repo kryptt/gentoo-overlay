@@ -6,8 +6,7 @@ EAPI=8
 # ROCm 7.14 is built by TheRock; components are no longer tagged "rocm-${PV}".
 ROCM_TAG="therock-10.0"
 
-LLVM_COMPAT=( 22 23 )
-inherit cmake llvm-r2
+inherit cmake
 
 DESCRIPTION="Radeon Open Compute hipcc"
 HOMEPAGE="https://github.com/ROCm/llvm-project/tree/amd-staging/amd/hipcc"
@@ -29,11 +28,7 @@ SLOT="0/$(ver_cut 1-2)"
 IUSE="debug"
 
 DEPEND="
-	$(llvm_gen_dep "
-		llvm-runtimes/compiler-rt:\${LLVM_SLOT}=
-		llvm-core/llvm:\${LLVM_SLOT}=
-		llvm-core/clang:\${LLVM_SLOT}=
-	")
+	sys-devel/llvm-roc:=
 "
 RDEPEND="${DEPEND}"
 
@@ -57,9 +52,9 @@ src_prepare() {
 	sed -e "s:/opt/rocm:/usr:g" \
 		-i src/hipBin_base.h || die
 
-	# therock-10.0 split the clang path into separate /= calls;
-	# insert the LLVM slot between "llvm" and "bin".
-	sed -e '/hipClangPath \/= "llvm";/a\    hipClangPath /= "'"${LLVM_SLOT}"'";' \
+	# therock-10.0 split the clang path into separate /= calls; point it at
+	# the fork: <rocm-path>/lib/llvm/roc/bin.
+	sed -e '/hipClangPath \/= "llvm";/a\    hipClangPath /= "roc";' \
 		-i src/hipBin_amd.h || die
 
 	sed -e "s:amdgcn/bitcode:lib/amdgcn/bitcode:g" \

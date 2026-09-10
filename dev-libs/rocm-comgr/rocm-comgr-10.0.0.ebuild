@@ -6,9 +6,7 @@ EAPI=8
 # ROCm 7.14 is built by TheRock; components are no longer tagged "rocm-${PV}".
 ROCM_TAG="therock-10.0"
 
-LLVM_COMPAT=( 22 23 )
-
-inherit cmake llvm-r2
+inherit cmake
 
 MY_P=llvm-project-${ROCM_TAG}
 components=( "amd/comgr" )
@@ -29,17 +27,11 @@ PATCHES=(
 	"${FILESDIR}/${PN}-6.4.1-extend-isa-compatibility-check.patch"
 	"${FILESDIR}/${PN}-6.1.0-dont-add-nogpulib.patch"
 	"${FILESDIR}/${PN}-7.14.0-missing-include.patch"
-	"${FILESDIR}/${PN}-10.0.0-hotswap-dylib.patch"
 )
 
 RDEPEND="
 	dev-libs/rocm-device-libs:${SLOT}
-	llvm-runtimes/clang-runtime:=
-	$(llvm_gen_dep "
-		llvm-core/clang:\${LLVM_SLOT}=
-		llvm-core/lld:\${LLVM_SLOT}=
-		llvm-core/llvm:\${LLVM_SLOT}=
-	")
+	sys-devel/llvm-roc:=
 	dev-util/hipcc:${SLOT}
 "
 DEPEND="${RDEPEND}"
@@ -64,25 +56,20 @@ src_unpack() {
 }
 
 src_prepare() {
-	sed -e "s:\${CLANG_CMAKE_DIR}/../../../\*:${EPREFIX}/usr/lib/clang/${LLVM_SLOT}/include:" \
-		-i cmake/opencl_header.cmake || die
-
-	# The llvm-22 backports carried by <=7.2.0 (Options/Options.h, virtual FS)
-	# are already in the therock-7.14 sources.
-
+	# cmake/opencl_header.cmake globs opencl-c-base.h below the Clang
+	# install prefix; with the self-contained llvm-roc prefix that just works.
 	cmake_src_prepare
 }
 
 src_configure() {
-	llvm_prepend_path "${LLVM_SLOT}"
-
 	local mycmakeargs=(
+		-DCMAKE_PREFIX_PATH="${EPREFIX}/usr/lib/llvm/roc"
 		-DCMAKE_STRIP=""  # disable stripping defined at lib/comgr/CMakeLists.txt:58
 		-DBUILD_TESTING=$(usex test ON OFF)
 		-DCOMGR_DISABLE_SPIRV=ON  # requires ROCm/SPIRV-LLVM-Translator (fork of dev-util/spirv-llvm-translator)
-		# Gentoo LLVM is dylib-only; therock-10.0's CMake defaults to
-		# per-component linking which fails without static libs.
-		-DLLVM_LINK_LLVM_DYLIB=ON
+		# Link the fork's LLVM/Clang statically and hide its symbols behind
+		# comgr's version script, the way TheRock builds it.
+		-DCOMGR_STATIC_LLVM=ON
 	)
 	# Prevent CMake from finding systemwide hip, which breaks tests
 	use test && mycmakeargs+=( -DCMAKE_DISABLE_FIND_PACKAGE_hip=ON )

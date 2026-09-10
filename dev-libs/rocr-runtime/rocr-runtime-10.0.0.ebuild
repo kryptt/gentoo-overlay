@@ -6,9 +6,7 @@ EAPI=8
 # ROCm 7.14 is built by TheRock; components are no longer tagged "rocm-${PV}".
 ROCM_TAG="therock-10.0"
 
-LLVM_COMPAT=( 22 23 )
-
-inherit cmake flag-o-matic llvm-r2
+inherit cmake flag-o-matic
 
 if [[ ${PV} == *9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/ROCm/ROCR-Runtime/"
@@ -33,14 +31,14 @@ DEPEND="${COMMON_DEPEND}
 	dev-libs/rocprofiler-register
 	dev-libs/roct-thunk-interface:${SLOT}
 	dev-libs/rocm-device-libs:${SLOT}
-	$(llvm_gen_dep "
-		llvm-core/clang:\${LLVM_SLOT}=
-		llvm-core/lld:\${LLVM_SLOT}=
-	")
 "
 RDEPEND="${DEPEND}"
-BDEPEND="app-editors/vim-core"
-	# vim-core is needed for "xxd"
+# vim-core is needed for "xxd"; image/blit_src compiles its kernels with the
+# fork's clang, located through find_package(Clang) under CMAKE_PREFIX_PATH.
+BDEPEND="
+	app-editors/vim-core
+	sys-devel/llvm-roc
+"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-7.2.0-use-system-hsakmt.patch"
@@ -69,6 +67,7 @@ src_configure() {
 
 	local mycmakeargs=(
 		-Wno-dev
+		-DCMAKE_PREFIX_PATH="${EPREFIX}/usr/lib/llvm/roc"
 	)
 
 	cmake_src_configure

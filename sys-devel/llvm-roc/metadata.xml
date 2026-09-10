@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>rodolfo.hansen@adtechnacity.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription lang="en">
+		The ROCm/llvm-project fork (amd-staging) at the TheRock release tag,
+		built the way TheRock builds it: clang and lld only, AMDGPU and X86
+		targets, assertions off, installed self-contained under
+		/usr/lib/llvm/roc. Version tracks the ROCm release, not LLVM's.
+		The ROCm 10 userspace (rocm-comgr, rocm-device-libs, hipcc, hip,
+		rocr-runtime) builds against this instead of ::gentoo's llvm slot.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">ROCm/llvm-project</remote-id>
+	</upstream>
+</pkgmetadata>
