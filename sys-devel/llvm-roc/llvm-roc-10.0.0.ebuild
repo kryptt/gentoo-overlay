@@ -98,6 +98,17 @@ src_configure() {
 src_install() {
 	cmake_src_install
 
+	# rocm.eclass's rocm_use_clang() -- which every ROCm math library goes
+	# through -- resolves the compiler as
+	# "$(hipconfig --hipclangpath)/${CHOST}-clang". Upstream LLVM installs
+	# only clang/clang++/clang-cpp; the triple-prefixed names are a Gentoo
+	# addition, so add them here or every sci-libs/roc* build dies on a
+	# missing compiler.
+	local i
+	for i in clang clang++ clang-cpp; do
+		dosym "${i}" "/usr/lib/llvm/roc/bin/${CHOST}-${i}"
+	done
+
 	# The dylibs are only ever wanted by the ROCm packages built against
 	# this prefix; expose them to the loader without putting the fork's
 	# clang on anyone's PATH.
