@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>kryptt@gmail.com</email>
+		<name>Rodolfo Hansen</name>
+	</maintainer>
+	<longdescription>
+		rocBLAS, hipBLAS, hipBLASLt, rocFFT, hipFFT, rocRAND, hipRAND,
+		rocSPARSE, hipSPARSE, rocSOLVER, hipSOLVER and Composable Kernel,
+		taken from AMD's prebuilt TheRock gfx1151 distribution rather than
+		built from source. The Tensile and rocFFT kernel databases in that
+		tarball are the tuning data a source build would have to regenerate,
+		and does not produce for gfx1151.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">ROCm/rocm-libraries</remote-id>
+	</upstream>
+</pkgmetadata>
