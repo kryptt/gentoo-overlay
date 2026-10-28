@@ -1,0 +1,4 @@
+# Gentoo's gui-libs/greetd runs the greeter as the "greetd" user, not
+# upstream's "greeter"; the cache dir doubles as its $HOME and holds the
+# extracted embedded UI.
+d /var/cache/dms-greeter 0750 greetd greetd -
