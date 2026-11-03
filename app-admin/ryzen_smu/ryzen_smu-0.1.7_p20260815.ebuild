@@ -21,7 +21,7 @@ inherit linux-mod-r1
 #
 # CAUTION: if ::gentoo ever ships a version above 0.1.7, portage will prefer it
 # and quietly lose family 0x1A support again. Bump this ebuild past it.
-MY_COMMIT="1be4fb1cd9d60b5ddefc2a4201a898766a731400"
+MY_COMMIT="d2983668300dd2a598e5a7dc40e71ce0678cc270"
 
 DESCRIPTION="Kernel driver for AMD Ryzen's System Management Unit (Zen5/Strix Halo fork)"
 HOMEPAGE="https://github.com/amkillam/ryzen_smu"
