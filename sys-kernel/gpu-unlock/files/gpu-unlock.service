@@ -1,0 +1,25 @@
+[Unit]
+Description=Unlock NVIDIA tensor cap before the driver binds the GPU
+After=systemd-udev-settle.service
+Wants=systemd-udev-settle.service
+Before=k3s.service display-manager.service nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# gpu_unlock runs the unlock + FLR on the still-unbound card (targets= comes from
+# the kernel command line), then the stock nvidia stack is loaded by name.
+# modprobe.blacklist= on the command line only stops udev/alias autoload, not these.
+#
+# The leading "-" on the first line is deliberate: if gpu_unlock is missing (for
+# example after a kernel bump, before @module-rebuild has run) or fails, systemd
+# ignores the failure and carries on, so nvidia still loads, just still capped.
+# Without it the first failing ExecStart= aborts the unit and nvidia never loads.
+ExecStart=-/sbin/modprobe gpu_unlock
+ExecStart=/sbin/modprobe nvidia
+ExecStart=/sbin/modprobe nvidia_uvm
+ExecStart=/sbin/modprobe nvidia_modeset
+ExecStart=/sbin/modprobe nvidia_drm
+
+[Install]
+WantedBy=multi-user.target
