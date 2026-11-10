@@ -33,6 +33,10 @@ src_compile() {
 	# Kbuild and a wrapper Makefile live in kernel/gpu_unlock; kbuild picks Kbuild.
 	# "extra" matches where the hand-built module was installed before this package.
 	local modlist=( gpu_unlock=extra:kernel/gpu_unlock )
+	# The wrapper Makefile defaults KDIR to /lib/modules/$(uname -r)/build, i.e. the
+	# RUNNING kernel; point it at the selected sources or a new-kernel build fails
+	# the eclass's vermagic check.
+	local modargs=( KDIR="${KV_OUT_DIR}" )
 
 	linux-mod-r1_src_compile
 }
