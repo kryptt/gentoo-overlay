@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>rhansen@rhansen.org</email>
+		<name>Richard Hansen</name>
+	</maintainer>
+	<longdescription>
+		udev rules from the Pybricks project that tag LEGO programmable bricks
+		(SPIKE Prime/Essential, MINDSTORMS Inventor/EV3/NXT/RCX), including their
+		DFU firmware-update modes, with uaccess so a browser (WebUSB) or
+		pybricksdev can talk to them without root.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">pybricks/pbrick-rules</remote-id>
+	</upstream>
+</pkgmetadata>
